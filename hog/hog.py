@@ -24,9 +24,11 @@ def roll_dice(num_rolls, dice=six_sided):
     "*** YOUR CODE HERE ***"
     sum = 0
     for i in range(num_rolls): 
-        if(dice == 1):
+        num = dice() 
+        # print(num)
+        if(num == 1):
             return 1
-        sum = sum + dice
+        sum = sum + num
     return sum
     # END PROBLEM 1
 
@@ -38,7 +40,10 @@ def piggy_points(score):
     """
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
-    
+    ones = score%10
+    score = score // 10     
+    tens = score % 10 
+    return abs(tens - ones) + 4
     # END PROBLEM 2
 
 
@@ -59,6 +64,10 @@ def take_turn(num_rolls, opponent_score, dice=six_sided, goal=GOAL_SCORE):
     assert opponent_score < goal, 'The game should be over.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
+    if num_rolls == 0: 
+        return piggy_points(opponent_score) 
+    else: 
+        return roll_dice(num_rolls, dice) 
     # END PROBLEM 3
 
 
@@ -80,7 +89,20 @@ def more_boar(player_score, opponent_score):
     False
     """
     # BEGIN PROBLEM 4
-    "*** YOUR CODE HERE ***"
+    "*** YOUR CODE HERE ***"  
+    # want to find a faster way or cleaner way of doing this 
+    ps_one = player_score % 10 
+    player_score = player_score // 10 
+    ps_ten = player_score % 10 
+    os_one = opponent_score % 10 
+    opponent_score = opponent_score // 10 
+    os_ten = opponent_score % 10 
+    
+    if max(os_one, os_ten) < max(ps_one, ps_ten) and min(os_one, os_ten) > min(ps_one, ps_ten):
+        return True 
+    else: 
+        return False 
+
     # END PROBLEM 4
 
 
@@ -120,10 +142,21 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    while score0 < goal and score1 < goal: 
+        score0 = score0 + take_turn(strategy0, score1, dice, goal)
+        if more_boar(score0, score1): 
+            score0 = score0 + take_turn(strategy0, score1, dice, goal)
+        who = next_player(who) 
+        score1 = score1 + take_turn(strategy1, score0, dice, goal) 
+        if more_boar(score1, score0): 
+            score1 = score1 + take_turn(strategy1, score0, dice, goal)
+        who = next_player(who) 
+        
     # END PROBLEM 5
     # (note that the indentation for the problem 6 prompt (***YOUR CODE HERE***) might be misleading)
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+
     # END PROBLEM 6
     return score0, score1
 
